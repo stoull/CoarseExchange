@@ -39,6 +39,9 @@ singleton_interface(CEConnectModel)
 + (NSDictionary *)getCurrentHostDicInformation;
 - (NSDictionary *)getCurrentHostDicInformation;
 
++ (void)deleteHost:(NSString *)host;
+- (void)deleteHost:(NSString *)host;
+
 /**
  *  将一个用户名及密码添加入模型，并将该用户设为当前用户，并置于accountArray第一位，对已存的用户作同样的处理
  *
@@ -55,6 +58,12 @@ singleton_interface(CEConnectModel)
 + (NSDictionary *)getCurrentAccountDicInformation;
 - (NSDictionary *)getCurrentAccountDicInformation;
 
+/**
+ *  移除这个用户的登录资料
+ *
+ *  @param username 用户名
+ */
+- (void)removeAccountByUserName:(NSString *)username;
 
 + (NSArray *)getAccountArray;
 + (NSArray *)getHostArray;

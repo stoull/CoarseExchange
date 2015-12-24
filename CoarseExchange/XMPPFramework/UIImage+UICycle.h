@@ -25,6 +25,7 @@
  */
 + (UIImage *)scaleToSize:(UIImage *)image size:(CGSize)size;
 
-
 + (UIImage *)circleImageWithImage:(UIImage *)image borderWidth:(CGFloat)borderWidth boraderColor:(UIColor *)borderColor;
+
++ (UIImage *)grayImage:(UIImage *)sourceImage;
 @end

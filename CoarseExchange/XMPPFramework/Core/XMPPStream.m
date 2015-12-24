@@ -1948,11 +1948,11 @@ enum XMPPStreamConfig
 			someAuth = [[XMPPSCRAMSHA1Authentication alloc] initWithStream:self password:password];
 			result = [self authenticate:someAuth error:&err];
 		}
-		else if ([self supportsDigestMD5Authentication])
-		{
-			someAuth = [[XMPPDigestMD5Authentication alloc] initWithStream:self password:password];
-			result = [self authenticate:someAuth error:&err];
-		}
+//		else if ([self supportsDigestMD5Authentication])
+//		{
+//			someAuth = [[XMPPDigestMD5Authentication alloc] initWithStream:self password:password];
+//			result = [self authenticate:someAuth error:&err];
+//		}
 		else if ([self supportsPlainAuthentication])
 		{
 			someAuth = [[XMPPPlainAuthentication alloc] initWithStream:self password:password];

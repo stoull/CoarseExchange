@@ -10,4 +10,6 @@
 
 @interface CEMainNavigationController : UINavigationController
 
++(void)setupNavTheme;
+
 @end

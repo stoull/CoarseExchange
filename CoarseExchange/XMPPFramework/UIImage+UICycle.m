@@ -39,6 +39,32 @@
     return newImage;
 }
 
++ (UIImage *)circleImageWithImage:(UIImage *)image borderWidth:(CGFloat)borderWidth boraderColor:(UIColor *)borderColor
+{
+    UIImage *sourceImage = image;
+    CGFloat imageWidth = sourceImage.size.width +2 *borderWidth;
+    CGFloat imageHieght = sourceImage.size.height + 2*borderWidth;
+    //
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(imageWidth, imageHieght), NO, 0);
+    //    //2.获取上下文
+    UIGraphicsGetCurrentContext(); //CGContextRef context = UIGraphicsGetCurrentContext();
+    // 3. 画圆
+    CGFloat radius = sourceImage.size.width<sourceImage.size.height ? sourceImage.size.width *0.5 :sourceImage.size.height*0.5;
+    // 4.使用bezierPath时行剪切
+    UIBezierPath *bezierPath = [UIBezierPath bezierPathWithArcCenter:CGPointMake(imageWidth*0.5, imageHieght*0.5) radius:radius startAngle:0 endAngle:2*M_PI clockwise:YES];
+    [borderColor setStroke];
+    [bezierPath stroke];
+    //5.剪切
+    [bezierPath addClip];
+    
+    //5.从内存中创建新建的图片对象
+    [sourceImage drawInRect:CGRectMake(borderWidth, borderWidth, sourceImage.size.width, sourceImage.size.height)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    //6.结束上下文
+    UIGraphicsEndImageContext();
+    return newImage;
+}
 
 + (UIImage *)scaleToSize:(UIImage *)image size:(CGSize)size
 {
@@ -50,7 +76,7 @@
 }
 
 // 给照片去色
--(UIImage *)grayImage:(UIImage *)sourceImage
++ (UIImage *)grayImage:(UIImage *)sourceImage
 {
     int bitmapInfo = kCGImageAlphaNone;
     int width = sourceImage.size.width;
@@ -73,4 +99,5 @@
     CGContextRelease(context);
     return grayImage;
 }
+
 @end

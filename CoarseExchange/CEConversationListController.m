@@ -7,8 +7,11 @@
 //
 
 #import "CEConversationListController.h"
+#import "XMPPAssistant.h"
+#import "CEConnectModel.h"
 
 @interface CEConversationListController ()
+
 
 @end
 
@@ -18,6 +21,7 @@
     [super viewDidLoad];
     
     self.title = @"文件云";
+
 }
 
 - (void)didReceiveMemoryWarning {

@@ -7,8 +7,14 @@
 //
 
 #import "CEProfileViewController.h"
+#import "XMPPvCardTemp.h"
+#import "XMPPAssistant.h"
+#import "CEConnectModel.h"
 
 @interface CEProfileViewController ()
+@property (weak, nonatomic) IBOutlet UIButton *headerIcon;
+@property (weak, nonatomic) IBOutlet UILabel *nickNameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *CENumberLabel;
 
 @end
 
@@ -17,11 +23,20 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
+    self.title = @"个人设置";
     
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    // xmpp 获取个人信息
+    XMPPvCardTemp *myVCard = [XMPPAssistant shareXMPPAssistant].vCard.myvCardTemp;
+    
+    // 设置图像
+    if (myVCard.photo) {
+        [self.headerIcon setBackgroundImage:[UIImage imageWithData:myVCard.photo] forState:UIControlStateNormal];
+    }
+    
+    // 设置昵称以及号码
+    self.nickNameLabel.text = myVCard.nickname;
+    NSDictionary *userInfor = [[CEConnectModel shareCEConnectModel] getCurrentAccountDicInformation];
+    self.CENumberLabel.text = userInfor[@"username"];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -29,70 +44,18 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-#warning Incomplete implementation, return the number of sections
-    return 0;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete implementation, return the number of rows
-    return 0;
-}
-
-/*
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+- (IBAction)logOut:(id)sender {
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    //WXLog(@"%@",[UIApplication sharedApplication].keyWindow);
     
-    // Configure the cell...
+#pragma -mark 关闭xmpp服务，并将该单例回收(不然登录新的用户还用xmppStream，coreData会冲突)
+    XMPPAssistant *assist = [XMPPAssistant shareXMPPAssistant];
+    [assist teardownXmpp];
+    assist = nil;
     
-    return cell;
+    [UIApplication sharedApplication].keyWindow.rootViewController = storyboard.instantiateInitialViewController;
+    [[XMPPAssistant shareXMPPAssistant] logOutXmppJID];
 }
-*/
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

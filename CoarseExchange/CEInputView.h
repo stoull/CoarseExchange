@@ -9,5 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface CEInputView : UIView
+@property (weak, nonatomic) IBOutlet UITextView *inputTextView;
+
++(instancetype)inputView;
 
 @end

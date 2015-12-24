@@ -43,9 +43,7 @@ singleton_implementation(CEConnectModel)
     if (!_archiverPath) {
         NSString *archiverPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
         _archiverPath = [archiverPath stringByAppendingPathComponent:archiveFileName];
-        
-        NSLog(@" ??XX : %@",archiverPath);
-        
+        NSLog(@" ???XXXX %@",_archiverPath);
         if (![self.mgr fileExistsAtPath:archiverPath]) {
             [self.mgr createFileAtPath:archiverPath contents:nil attributes:nil];
         }
@@ -149,6 +147,28 @@ singleton_implementation(CEConnectModel)
 }
 
 ////////////////////////////////////////////////////////////////////////
++ (void)deleteHost:(NSString *)host{
+    CEConnectModel *model = [CEConnectModel shareCEConnectModel];
+    [model deleteHost:host];
+}
+
+- (void)deleteHost:(NSString *)host{
+    CEConnectModel *model = [NSKeyedUnarchiver unarchiveObjectWithFile:self.archiverPath];
+    NSMutableArray *hostArray = [[model getHostArray] mutableCopy];
+    for (NSDictionary *hostDic in hostArray){
+        if ([hostDic[@"host"] isEqualToString:host]) {
+            [hostArray removeObject:hostDic];
+            if ([hostDic[@"host"] isEqualToString:_currentHostDic[@"host"]]) {
+                _currentHostDic = [hostArray firstObject];
+            }
+            self.hostArray = hostArray;
+            [self save];
+            break;
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////
 + (NSDictionary *)getCurrentAccountDicInformation
 {
     CEConnectModel *model = [CEConnectModel shareCEConnectModel];
@@ -160,6 +180,21 @@ singleton_implementation(CEConnectModel)
     return model.currentAccountDic;
 }
 
+////////////////////////////////////////////////////////////////////////
+- (void)removeAccountByUserName:(NSString *)username{
+    if ([username length] > 0) {
+        for (NSDictionary *accountDic in self.accountArray){
+            if ([accountDic[@"username"] isEqualToString:username]) {
+                [self.accountArray removeObject:accountDic];
+                [self save];
+                break;
+            }
+        }
+    }
+}
++ (void)removeAccountByUserName:(NSString *)username{
+    
+}
 ////////////////////////////////////////////////////////////////////////
 - (NSArray *)getAccountArray
 {
@@ -190,9 +225,9 @@ singleton_implementation(CEConnectModel)
 {
     if ([NSKeyedArchiver archiveRootObject:self toFile:self.archiverPath])
     {
-        NSLog(@" successful !");
+        NSLog(@" archivered successful !");
     }else{
-        NSLog(@" failed !");
+        NSLog(@" archivered failed !");
     }
 }
 

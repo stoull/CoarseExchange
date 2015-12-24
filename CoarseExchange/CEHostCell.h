@@ -13,4 +13,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *hostLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *selectedDot;
 
+@property (weak, nonatomic) IBOutlet UIButton *deleteHostButton;
+@property (nonatomic, strong) NSIndexPath *indexPath;
+
+
 @end

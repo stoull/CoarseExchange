@@ -7,7 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "CCSSingleton.h"
 
-@interface CETransition : NSObject
+@interface CETransition : NSObject<UIViewControllerTransitioningDelegate>
+singleton_interface(CETransition)
 
 @end

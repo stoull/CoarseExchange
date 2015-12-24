@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "XMPPJID.h"
 
 @interface CEChatViewController : UIViewController
+
+@property (nonatomic, strong) XMPPJID *friendJid;
 
 @end

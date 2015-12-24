@@ -19,5 +19,8 @@
 
     // Configure the view for the selected state
 }
+- (IBAction)deleteClick:(id)sender {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"deleteHost" object:nil userInfo:@{@"indexPath" : self.indexPath}];
+}
 
 @end

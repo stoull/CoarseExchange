@@ -17,7 +17,6 @@ static NSString *eidtCellIdentifer = @"editHostCell";
 @property (weak, nonatomic) IBOutlet UITableView *serviceAddressTable;
 
 @property (nonatomic, strong)CEConnectModel *connectModel;
-@property (nonatomic, strong)NSDictionary *currentHostDic;
 
 @property (nonatomic, assign) BOOL isAddHost;
 @property (nonatomic, weak) CEEidtHostCell *editCell;
@@ -31,13 +30,6 @@ static NSString *eidtCellIdentifer = @"editHostCell";
     }
     return _connectModel;
 }
--(NSDictionary *)currentHostDic
-{
-    if (!_currentHostDic) {
-        _currentHostDic = [self.connectModel getCurrentHostDicInformation];
-    }
-    return _currentHostDic;
-}
 
 - (IBAction)back:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -45,6 +37,7 @@ static NSString *eidtCellIdentifer = @"editHostCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(delegateHost:) name:@"deleteHost" object:nil];
     // Do any additional setup after loading the view.
 }
 
@@ -104,25 +97,27 @@ static NSString *eidtCellIdentifer = @"editHostCell";
         }
         NSArray *hostArray = [CEConnectModel getHostArray];
         NSDictionary *hostDic = hostArray[indexPath.row];
-        NSString *host = hostDic[@"host"];
-        cell.hostDescriptionLabel.text = host;
-        cell.hostLabel.text = hostDic[@"descripte"];
-        if ([self.currentHostDic[@"host"] isEqualToString:host]) {
+        NSString *hostDescripte = hostDic[@"descripte"];
+        cell.hostDescriptionLabel.text = hostDescripte;
+        cell.hostLabel.text = hostDic[@"host"];
+        if ([self.connectModel.currentHostDic[@"host"] isEqualToString:hostDic[@"host"]]) {
             cell.selectedDot.hidden = NO;
         }else{
             cell.selectedDot.hidden = YES;
         }
+        cell.indexPath = indexPath;
         return cell;
     }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSArray *hostArray = [CEConnectModel getHostArray];
-    NSDictionary *getHostDic = hostArray[indexPath.row];
-    self.currentHostDic = getHostDic;
-    [self.connectModel setCurrentHost:getHostDic];
-    [self.serviceAddressTable reloadData];
+    if ((self.isAddHost && indexPath.section ==1) || !self.isAddHost) {
+        NSArray *hostArray = [CEConnectModel getHostArray];
+        NSDictionary *getHostDic = hostArray[indexPath.row];
+        [self.connectModel setCurrentHost:getHostDic];
+        [self.serviceAddressTable reloadData];
+    }
 }
 
 #pragma -mark UITableViewDelegate
@@ -148,6 +143,16 @@ static NSString *eidtCellIdentifer = @"editHostCell";
     }
 }
 
+// 删除一个站点
+- (void)delegateHost:(NSNotification *)notification
+{
+    NSIndexPath *indexPath = notification.userInfo[@"indexPath"];
+    NSArray *hostArray = [self.connectModel getHostArray];
+    NSString *host = hostArray[indexPath.row][@"host"];
+    [self.connectModel deleteHost:host];
+    [self.serviceAddressTable reloadData];
+}
+
 - (void)cancelAddHost
 {
     self.isAddHost = false;
@@ -156,6 +161,8 @@ static NSString *eidtCellIdentifer = @"editHostCell";
     [def removeObjectForKey:@"hostDescriptionCache"];
     [self.serviceAddressTable reloadData];
 }
+
+
 - (void)confirmAddHost
 {
     self.editCell.identifierDescripteErrorLabel.hidden = YES;
@@ -169,7 +176,6 @@ static NSString *eidtCellIdentifer = @"editHostCell";
         if ([description length] > 0) {
             [self.connectModel addToCurrentHost:host andDescripte:description];
             self.isAddHost = false;
-            self.currentHostDic = @{@"host" : host, @"descripte": description};
             [self.serviceAddressTable reloadData];
         }else self.editCell.identifierDescripteErrorLabel.hidden = NO;
     }else self.editCell.identifierHostErrorLabel.hidden = NO;
